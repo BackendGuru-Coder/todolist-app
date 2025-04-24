@@ -8,41 +8,56 @@ const App = () => {
   const [nextId, setNextId] = useState(1);
   const [showCompleted, setShowCompleted] = useState(false);
 
+  const API_URL = 'http://localhost:3001/tasks';
+
   useEffect(() => {
-    axios.get('https://jsonplaceholder.typicode.com/todos?_limit=5')
+    axios.get(API_URL)
       .then(res => {
-        const formatted = res.data.map((t, index) => ({
-          id: index + 1,
-          text: t.title,
-          completed: t.completed
+        const formatted = res.data.map(task => ({
+          ...task,
+          id: String(task.id) // <-- ID como string
         }));
         setTasks(formatted);
-        setNextId(res.data.length + 1);
-      })
-      .catch(err => console.error(err));
+        setNextId(formatted.length > 0
+          ? Math.max(...formatted.map(t => Number(t.id))) + 1
+          : 1);
+      });
   }, []);
 
-  const addTask = (text) => {
+  const addTask = async (text) => {
     if (!text.trim()) return false;
-    const newTask = {
-      id: nextId,
-      text,
-      completed: false
-    };
-    setTasks(prev => [newTask, ...prev]);
+    const newTask = { id: String(nextId), text, completed: false }; // ID como string
+    await axios.post(API_URL, newTask);
+    setTasks(prev => [...prev, newTask]);
     setNextId(prev => prev + 1);
     return true;
   };
 
-  const toggleTask = (id) => {
-    setTasks(prev => prev.map(t =>
-      t.id === id ? { ...t, completed: !t.completed } : t
-    ));
+  const toggleTask = async (id) => {
+    try {
+      const taskToUpdate = tasks.find(task => task.id === id);
+      if (!taskToUpdate) return;
+  
+      const updatedTask = {
+        ...taskToUpdate,
+        completed: !taskToUpdate.completed,
+      };
+  
+      await axios.put(`${API_URL}/${id}`, updatedTask);
+  
+      setTasks(prev =>
+        prev.map(task => (task.id === id ? updatedTask : task))
+      );
+    } catch (error) {
+      console.error('Erro ao alternar status da tarefa:', error);
+    }
   };
-
-  const removeTask = (id) => {
+  
+  const removeTask = async (id) => {
+    await axios.delete(`${API_URL}/${id}`);
     setTasks(prev => prev.filter(t => t.id !== id));
   };
+
 
   return (
     <Box

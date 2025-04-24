@@ -1,0 +1,19 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "text": "Tarefa exemplo",
+      "completed": true
+    },
+    {
+      "id": "2",
+      "text": "tarefa teste para uma api em json ",
+      "completed": true
+    },
+    {
+      "id": "4",
+      "text": "tarefa teste 1234",
+      "completed": false
+    }
+  ]
+}
