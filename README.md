@@ -1,9 +1,9 @@
-# Para rodar a API fake com json-server
+# Para rodar a aplicação
 
 Utilizei um json-server para fazer a API para manipular os dados.
 
-Para utilizar a API, execute o comando abaixo antes de rodar o projeto react:
+O json-server está sendo startado automaticamento quando a aplicação é executada, então somente é necessário o comando abaixo:
 
 ```sh
-json-server --watch db.json --port 3001
+npm run dev
 ```
